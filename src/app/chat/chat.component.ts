@@ -1,8 +1,10 @@
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ChatService} from './shared/chat.service';
-import {Subscription} from 'rxjs';
-import * as moment from 'moment';
+import {Observable, Subject, Subscription} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
+import {ChatClient} from './shared/chat-client.model';
+import {ChatMessage} from './shared/chat-message.model';
 
 @Component({
   selector: 'app-chat',
@@ -11,35 +13,39 @@ import * as moment from 'moment';
 })
 export class ChatComponent implements OnInit, OnDestroy {
   message = new FormControl('');
-  namefc = new FormControl('');
-  name: string | undefined;
-  messages: string[] = [];
-  clients: string[] = [];
-  sub: Subscription | undefined;
-  sub2: Subscription | undefined;
+  nickNameFc = new FormControl('');
+  messages: ChatMessage[] = [];
+  unsubscribe$ = new Subject();
+  nickname: string | undefined;
+  clients$: Observable<ChatClient[]> | undefined;
   constructor(private chatService: ChatService) { }
 
   ngOnInit(): void {
-    this.sub = this.chatService.listenForMessages()
+    this.clients$ = this.chatService.listenForClients();
+    this.chatService.listenForMessages()
+      .pipe(
+        takeUntil(this.unsubscribe$)
+      )
       .subscribe(message => {
         console.log('hellloooo');
         this.messages.push(message);
       });
-
-    this.sub2 = this.chatService.listenForClients()
-      .subscribe(clients => {
-        this.clients = clients;
+    this.chatService.getAllMessages()
+      .pipe(
+        take(1)
+      )
+      .subscribe(messages => {
+        console.log('hellloooo');
+        this.messages = messages;
       });
+    this.chatService.connect();
   }
 
   ngOnDestroy(): void {
     console.log('Destroyed');
-    if (this.sub) {
-      this.sub.unsubscribe();
-    }
-    if (this.sub2) {
-      this.sub2.unsubscribe();
-    }
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+    this.chatService.disconnect();
   }
 
   sendMessage(): void {
@@ -51,6 +57,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.name = this.namefc.value;
     if (this.name) {
       this.chatService.sendName(this.name);
+    }
+  }
+
+  sendNickName(): void {
+    if (this.nickNameFc.value) {
+      this.nickname = this.nickNameFc.value;
+      this.chatService.sendNickName(this.nickNameFc.value);
     }
   }
 }
