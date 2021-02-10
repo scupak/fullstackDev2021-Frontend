@@ -5,6 +5,7 @@ import {Observable, Subject, Subscription} from 'rxjs';
 import {take, takeUntil} from 'rxjs/operators';
 import {ChatClient} from './shared/chat-client.model';
 import {ChatMessage} from './shared/chat-message.model';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-chat',
@@ -50,7 +51,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   sendMessage(): void {
     console.log(this.message.value);
-    this.chatService.sendMessage(this.message.value);
+    this.chatService.sendMessage({message: this.message.value, date: Date.now() } );
   }
 
   sendNickName(): void {

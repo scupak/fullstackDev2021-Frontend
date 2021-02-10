@@ -3,6 +3,7 @@ import {Socket} from 'ngx-socket-io';
 import {Observable} from 'rxjs';
 import {ChatClient} from './chat-client.model';
 import {ChatMessage} from './chat-message.model';
+import {MessageDTO} from './MessageDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class ChatService {
 
   constructor(private socket: Socket) { }
 
-  sendMessage(msg: string): void {
+  sendMessage(msg: MessageDTO): void {
     this.socket.emit('message', msg);
   }
 
