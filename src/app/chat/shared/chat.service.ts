@@ -4,11 +4,13 @@ import {Observable} from 'rxjs';
 import {ChatClient} from './chat-client.model';
 import {ChatMessage} from './chat-message.model';
 import {MessageDTO} from './MessageDTO';
+import {WelcomeDto} from './WelcomeDto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
+  chatClient: ChatClient | undefined;
 
   constructor(private socket: Socket) { }
 
@@ -25,6 +27,15 @@ export class ChatService {
     return this.socket
       .fromEvent<ChatClient[]>('clients');
   }
+  listenForWelcome(): Observable<WelcomeDto> {
+    return this.socket
+      .fromEvent<WelcomeDto>('welcome');
+  }
+  listenForTyping(): Observable<ChatClient[]> {
+    return this.socket
+      .fromEvent<ChatClient[]>('typing');
+
+  }
 
   getAllMessages(): Observable<ChatMessage[]> {
     return this.socket
@@ -39,4 +50,17 @@ export class ChatService {
   connect(): void {
     this.socket.connect();
   }
+
+  typingEvent(typing: boolean): void {
+
+    this.socket.emit('typing', typing);
+
+
+  }
+
+
+
+
+
+
 }

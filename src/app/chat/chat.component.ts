@@ -2,7 +2,7 @@ import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ChatService} from './shared/chat.service';
 import {Observable, Subject, Subscription} from 'rxjs';
-import {take, takeUntil} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, take, takeUntil} from 'rxjs/operators';
 import {ChatClient} from './shared/chat-client.model';
 import {ChatMessage} from './shared/chat-message.model';
 import {DatePipe} from '@angular/common';
@@ -17,12 +17,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   nickNameFc = new FormControl('');
   messages: ChatMessage[] = [];
   unsubscribe$ = new Subject();
-  nickname: string | undefined;
   clients$: Observable<ChatClient[]> | undefined;
+  typingClients$: Observable<ChatClient[]> | undefined;
+  chatClient: ChatClient | undefined;
   constructor(private chatService: ChatService) { }
 
   ngOnInit(): void {
     this.clients$ = this.chatService.listenForClients();
+    this.typingClients$ = this.chatService.listenForTyping();
     this.chatService.listenForMessages()
       .pipe(
         takeUntil(this.unsubscribe$)
@@ -31,6 +33,33 @@ export class ChatComponent implements OnInit, OnDestroy {
         console.log('hellloooo');
         this.messages.push(message);
       });
+
+    this.chatService.listenForWelcome()
+      .pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe(welcome => {
+      this.messages = welcome.messages;
+      this.chatClient = this.chatService.chatClient = welcome.client;
+
+    });
+    if (this.chatService.chatClient){
+      this.chatService.sendNickName(this.chatService.chatClient.nickname);
+    }
+
+    this.message.valueChanges
+      .pipe(takeUntil(this.unsubscribe$)
+      ).subscribe( (value) => {
+        if (value.length > 0){
+          this.chatService.typingEvent(true);
+          console.log('typing');
+        }
+        else{
+          this.chatService.typingEvent(false);
+          console.log('not typing');
+        }
+    });
+
+    /*
     this.chatService.getAllMessages()
       .pipe(
         take(1)
@@ -39,24 +68,28 @@ export class ChatComponent implements OnInit, OnDestroy {
         console.log('hellloooo');
         this.messages = messages;
       });
-    this.chatService.connect();
+
+     */
+    //this.chatService.connect();
   }
 
   ngOnDestroy(): void {
     console.log('Destroyed');
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-    this.chatService.disconnect();
+    //this.chatService.disconnect();
   }
 
   sendMessage(): void {
     console.log(this.message.value);
     this.chatService.sendMessage({message: this.message.value, date: Date.now() } );
+    this.message.patchValue('');
   }
 
   sendNickName(): void {
     if (this.nickNameFc.value) {
-      this.nickname = this.nickNameFc.value;
+
+
       this.chatService.sendNickName(this.nickNameFc.value);
     }
   }
