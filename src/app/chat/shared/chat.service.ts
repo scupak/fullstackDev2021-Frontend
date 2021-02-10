@@ -36,6 +36,11 @@ export class ChatService {
       .fromEvent<ChatClient[]>('typing');
 
   }
+  listenForError(): Observable<string> {
+    return this.socket
+      .fromEvent<string>('error');
+
+  }
 
   getAllMessages(): Observable<ChatMessage[]> {
     return this.socket
