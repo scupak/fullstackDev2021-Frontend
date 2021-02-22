@@ -39,7 +39,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.unsubscribe$)
       )
-      .subscribe(error=> {
+      .subscribe(error => {
         console.log(error);
         this.error = error;
       });
