@@ -2,7 +2,7 @@
 <div>
   <div class = "row vh-100" *ngIf="chatClient" style="padding-top: 30px">
 
-    <div class="col-3">
+    <div class="col-md-3 col-sm-4">
       <div class="card h-100"  style="padding-right: 0px">
         <div class="card-header">
           <h5>Users online</h5>
@@ -20,15 +20,15 @@
     </div>
 
 
-    <div class="col-9">
+    <div class="col-md-9 col-sm-8">
       <div class="card h-100 " style="padding-left: 0px">
         <div class="card-header">
           <h5> Messages</h5>
         </div>
         <div class="card-body" >
-          <h4 *ngFor="let chatMessage of messages">
+          <p *ngFor="let chatMessage of messages">
             {{chatMessage.message.date | date:'hh:mm:ss'}} --{{chatMessage.sender.nickname}} -- {{chatMessage.message.message}}
-          </h4>
+          </p>
 
         </div>
         <div class="card-footer" >
@@ -39,7 +39,9 @@
               <input type="text" [formControl]="message">
             </label>
 
-            <button (click)="sendMessage()">Send Message</button>
+            <button style="margin-left: 5px" (click)="sendMessage()" class="btn btn-success">Send Message</button>
+
+
             <div *ngIf="typingClients$ | async as clients">
               <ul>
                 <li *ngFor="let client of clients">
@@ -59,14 +61,22 @@
 
 
 
-  <div>
-    <div *ngIf="!chatClient">
-      <label>
-        Enter Nickname:
-        <input type="text" [formControl]="nickNameFc">
-      </label>
+  <div class="row align-items-center justify-content-center vh-100" *ngIf="!chatClient">
+    <div class="card">
+      <div class="card-body">
+        <div >
+          <label>
+            Enter Nickname:
+            <input type="text" [formControl]="nickNameFc">
+          </label>
 
-      <button (click)="sendNickName()">Send</button>
+          <div class="row justify-content-end " style="margin-right: 0mm">
+          <button class="btn btn-success" (click)="sendNickName()">Send</button>
+          </div>
+        </div>
+      </div>
+
     </div>
+
   </div>
 </div>
