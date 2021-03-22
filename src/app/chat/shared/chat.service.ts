@@ -5,6 +5,7 @@ import {ChatClient} from './chat-client.model';
 import {ChatMessage} from './chat-message.model';
 import {MessageDTO} from './MessageDTO';
 import {WelcomeDto} from './WelcomeDto';
+import {ChatSocket} from '../../app.module';
 
 @Injectable({
   providedIn: 'root'
@@ -12,53 +13,53 @@ import {WelcomeDto} from './WelcomeDto';
 export class ChatService {
   chatClient: ChatClient | undefined;
 
-  constructor(private socket: Socket) { }
+  constructor(private chatSocket: ChatSocket) { }
 
   sendMessage(msg: MessageDTO): void {
-    this.socket.emit('message', msg);
+    this.chatSocket.emit('message', msg);
   }
 
   listenForMessages(): Observable<ChatMessage> {
-    return this.socket
+    return this.chatSocket
       .fromEvent<ChatMessage>('newMessage');
   }
 
   listenForClients(): Observable<ChatClient[]> {
-    return this.socket
+    return this.chatSocket
       .fromEvent<ChatClient[]>('clients');
   }
   listenForWelcome(): Observable<WelcomeDto> {
-    return this.socket
+    return this.chatSocket
       .fromEvent<WelcomeDto>('welcome');
   }
   listenForTyping(): Observable<ChatClient[]> {
-    return this.socket
+    return this.chatSocket
       .fromEvent<ChatClient[]>('typing');
 
   }
   listenForError(): Observable<string> {
-    return this.socket
+    return this.chatSocket
       .fromEvent<string>('error');
 
   }
 
   getAllMessages(): Observable<ChatMessage[]> {
-    return this.socket
+    return this.chatSocket
       .fromEvent<ChatMessage[]>('allMessages');
   }
   sendNickName(nickname: string): void {
-    this.socket.emit('nickname', nickname);
+    this.chatSocket.emit('nickname', nickname);
   }
   disconnect(): void {
-    this.socket.disconnect();
+    this.chatSocket.disconnect();
   }
   connect(): void {
-    this.socket.connect();
+    this.chatSocket.connect();
   }
 
   typingEvent(typing: boolean): void {
 
-    this.socket.emit('typing', typing);
+    this.chatSocket.emit('typing', typing);
 
 
   }
