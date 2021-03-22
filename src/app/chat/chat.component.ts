@@ -6,6 +6,7 @@ import {debounceTime, distinctUntilChanged, take, takeUntil} from 'rxjs/operator
 import {ChatClient} from './shared/chat-client.model';
 import {ChatMessage} from './shared/chat-message.model';
 import {DatePipe} from '@angular/common';
+import {StorageService} from "../shared/storage.service";
 
 @Component({
   selector: 'app-chat',
@@ -21,7 +22,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   typingClients$: Observable<ChatClient[]> | undefined;
   chatClient: ChatClient | undefined;
   public error: string | undefined;
-  constructor(private chatService: ChatService) { }
+  socketId: string | undefined;
+  constructor(private chatService: ChatService, private storageService: StorageService) { }
 
   ngOnInit(): void {
     this.clients$ = this.chatService.listenForClients();
@@ -50,6 +52,9 @@ export class ChatComponent implements OnInit, OnDestroy {
       ).subscribe(welcome => {
       this.messages = welcome.messages;
       this.chatClient = this.chatService.chatClient = welcome.client;
+      this.storageService.saveClientId(this.chatClient.id);
+
+
 
     });
     if (this.chatService.chatClient){
@@ -80,19 +85,33 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
 
      */
-    //this.chatService.connect();
+    // this.chatService.connect();
+
+    this.chatService.listenForConnect()
+      .pipe(takeUntil(this.unsubscribe$)
+      ).subscribe((id) => {
+        console.log('id', id);
+        this.socketId = id;
+    });
+
+    this.chatService.listenForDisconnect()
+      .pipe(takeUntil(this.unsubscribe$)
+      ).subscribe((id) => {
+      console.log('disconnectedId', id);
+      this.socketId = id;
+    });
   }
 
   ngOnDestroy(): void {
     console.log('Destroyed');
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-    //this.chatService.disconnect();
+    // this.chatService.disconnect();
   }
 
   sendMessage(): void {
     console.log(this.message.value);
-    this.chatService.sendMessage({message: this.message.value, date: Date.now() } );
+    this.chatService.sendMessage({message: this.message.value, date: new Date(Date.now()) } );
     this.message.patchValue('');
   }
 

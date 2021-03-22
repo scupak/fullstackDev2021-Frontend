@@ -1,4 +1,6 @@
-
+<div *ngIf="!socketId" style="color: darkred">
+  You are not connected!!
+</div>
 <div>
   <div class = "row vh-100" *ngIf="chatClient" style="padding-top: 30px">
 
@@ -23,7 +25,7 @@
     <div class="col-md-9 col-sm-8">
       <div class="card h-100 " style="padding-left: 0px">
         <div class="card-header">
-          <h5> Messages</h5>
+          <h5> Messages </h5>
         </div>
         <div class="card-body" >
           <p *ngFor="let chatMessage of messages">
@@ -32,10 +34,10 @@
 
         </div>
         <div class="card-footer" >
-          <h1 *ngIf="error">{{error}}</h1>
+
           <div *ngIf="chatClient">
             <label>
-              Message:
+              Message: {{socketId}}
               <input type="text" [formControl]="message">
             </label>
 
@@ -79,4 +81,8 @@
     </div>
 
   </div>
+</div>
+<div *ngIf="error">{{error}}</div>
+<div *ngIf="!socketId" style="color: darkred">
+  You are not connected!!
 </div>

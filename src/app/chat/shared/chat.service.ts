@@ -5,6 +5,7 @@ import {ChatClient} from './chat-client.model';
 import {ChatMessage} from './chat-message.model';
 import {MessageDTO} from './MessageDTO';
 import {WelcomeDto} from './WelcomeDto';
+import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +39,35 @@ export class ChatService {
   }
   listenForError(): Observable<string> {
     return this.socket
-      .fromEvent<string>('error');
+      .fromEvent<string>('connect')
+      .pipe(
+        map(() => {
+          return this.socket.ioSocket.id;
+        })
+      );
+
+  }
+  listenForConnect(): Observable<string>{
+    return this.socket
+      .fromEvent<string>('connect')
+      .pipe(
+        map(() => {
+          return this.socket.ioSocket.id;
+    })
+      );
+
+
+
+  }
+  listenForDisconnect(): Observable<string>{
+    return this.socket
+      .fromEvent<string>('disconnect')
+      .pipe(
+        map(() => {
+          return this.socket.ioSocket.id;
+        })
+      );
+
 
   }
 
