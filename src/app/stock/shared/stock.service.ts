@@ -15,9 +15,13 @@ export class StockService {
 
   }
 
-  ListenForAllStocks(): Observable<Stock>{
+  listenForUpdate(): Observable<Stock>{
+    return this.stockSocket.fromEvent<Stock>('stockUpdate');
+  }
 
-        return this.stockSocket.fromEvent<Stock>('stocks');
+  ListenForAllStocks(): Observable<Stock[]>{
+
+        return this.stockSocket.fromEvent<Stock[]>('stocks');
 
   }
   listenForError(): Observable<string> {
