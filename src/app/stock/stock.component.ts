@@ -24,7 +24,7 @@ export class StockComponent implements OnInit , OnDestroy{
       .pipe(
         takeUntil(this.unsubscribe$)
       ).subscribe(stock => {
-        if(this.stocks !== undefined) {
+        if (this.stocks !== undefined) {
           const index = this.stocks?.findIndex(arrayStock => arrayStock.id === stock.id);
 
 
@@ -37,7 +37,7 @@ export class StockComponent implements OnInit , OnDestroy{
     console.log('Destroyed');
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-    //this.chatService.disconnect();
+    // this.chatService.disconnect();
   }
 
 }
