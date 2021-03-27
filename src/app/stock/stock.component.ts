@@ -12,6 +12,7 @@ import {takeUntil} from 'rxjs/operators';
 })
 export class StockComponent implements OnInit , OnDestroy{
   stocks: Stock[] | undefined;
+  currentStock: Stock | undefined;
   unsubscribe$ = new Subject();
 
   constructor(private stockService: StockService) { }
@@ -29,6 +30,7 @@ export class StockComponent implements OnInit , OnDestroy{
 
 
           this.stocks[index] = stock;
+          console.log('Update!!!!');
         }
     } );
 
@@ -38,6 +40,20 @@ export class StockComponent implements OnInit , OnDestroy{
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
     // this.chatService.disconnect();
+  }
+
+  selectStock(stock: Stock): void{
+    this.currentStock = stock;
+  }
+
+  increaseStock(stock: Stock): void{
+    stock.price += 1;
+    this.stockService.UpdateStock(stock);
+  }
+
+  decreaseStock(stock: Stock): void{
+    stock.price -= 1;
+    this.stockService.UpdateStock(stock);
   }
 
 }

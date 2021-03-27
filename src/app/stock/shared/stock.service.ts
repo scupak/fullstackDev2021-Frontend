@@ -12,11 +12,14 @@ export class StockService {
 
   UpdateStock(stock: Stock): void{
    this.stockSocket.emit('update', stock);
-
+   console.log('Update emitted!!!');
   }
 
   listenForUpdate(): Observable<Stock>{
-    return this.stockSocket.fromEvent<Stock>('stockUpdate');
+    const stock = this.stockSocket.fromEvent<Stock>('stockUpdate');
+    console.log(stock);
+    return stock;
+
   }
 
   ListenForAllStocks(): Observable<Stock[]>{

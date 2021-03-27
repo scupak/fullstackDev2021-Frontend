@@ -1,16 +1,44 @@
 <div>
-<div class="d-flex p-2 justify-content-center " >
-</div>
-  <div class="d-flex p-2 justify-content-center " >
+  <div class="d-flex p-2 justify-content-center ">
+  </div>
+  <div class="d-flex p-2 justify-content-center ">
     Exchange Stocks
   </div>
-<div class="d-flex p-2 justify-content-between " style="margin: 20px" >
+  <div class="d-flex p-2 justify-content-center " style="margin: 20px">
 
-  <div class="d-flex p-2  "  >
-Stocks
+    <div class="d-flex p-2  ">
+      <div class="card h-100" style="padding-right: 0px">
+
+        <div class="card-header">
+          <h5>Stocks</h5>
+        </div>
+        <div class="card-body">
+          <p *ngFor="let stock of stocks" (click)="selectStock(stock)">
+            {{stock.id}} -- {{stock.price}}
+          </p>
+        </div>
+
+      </div>
+    </div>
+    <div class="d-flex p-2">
+      <div class="card h-100" style="padding-right: 0px">
+
+        <div class="card-header">
+          <h5>Selected Stocks</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="currentStock">
+            <p>{{currentStock.id}}</p>
+           <p>{{currentStock.desc}}</p>
+          </div>
+        </div>
+        <div class="card-footer" >
+          <p *ngIf="currentStock">
+            Price -- {{currentStock.price}}
+          </p>
+          <button (click)="increaseStock(currentStock!)" class="btn btn-success">+</button>
+          <button (click)="decreaseStock(currentStock!)" class="btn btn-danger">-</button>
+        </div>
+    </div>
   </div>
-  <div class="d-flex p-2" >
-Selected Stock
-  </div>
-</div>
 </div>
