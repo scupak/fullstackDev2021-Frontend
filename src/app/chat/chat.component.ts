@@ -6,6 +6,9 @@ import {debounceTime, distinctUntilChanged, take, takeUntil} from 'rxjs/operator
 import {ChatClient} from './shared/chat-client.model';
 import {ChatMessage} from './shared/chat-message.model';
 import {DatePipe} from '@angular/common';
+import {ChatState} from './state/chat.state';
+import {Select, Store} from '@ngxs/store';
+import {ListenForClients, StopListeningForClients} from "./state/chat.actions";
 
 @Component({
   selector: 'app-chat',
@@ -17,14 +20,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   nickNameFc = new FormControl('');
   messages: ChatMessage[] = [];
   unsubscribe$ = new Subject();
+  @Select(ChatState.clients)
   clients$: Observable<ChatClient[]> | undefined;
   typingClients$: Observable<ChatClient[]> | undefined;
   chatClient: ChatClient | undefined;
   public error: string | undefined;
-  constructor(private chatService: ChatService) { }
+  constructor(private chatService: ChatService, private store: Store) { }
 
   ngOnInit(): void {
-    this.clients$ = this.chatService.listenForClients();
+    this.store.dispatch(new ListenForClients());
     this.typingClients$ = this.chatService.listenForTyping();
     this.chatService.listenForMessages()
       .pipe(
@@ -80,14 +84,15 @@ export class ChatComponent implements OnInit, OnDestroy {
       });
 
      */
-    //this.chatService.connect();
+    // this.chatService.connect();
   }
 
   ngOnDestroy(): void {
     console.log('Destroyed');
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-    //this.chatService.disconnect();
+    this.store.dispatch(new StopListeningForClients());
+    // this.chatService.disconnect();
   }
 
   sendMessage(): void {

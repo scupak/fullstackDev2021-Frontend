@@ -8,6 +8,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxsModule } from '@ngxs/store';
 import {environment} from '../environments/environment';
 import {ChatState} from "./chat/state/chat.state";
+import {NgxsLoggerPluginModule} from "@ngxs/logger-plugin";
 
 
 
@@ -37,9 +38,9 @@ export class StockSocket extends Socket {
     AppRoutingModule,
     SocketIoModule,
     NgbModule,
-    NgxsModule.forRoot([ChatState], {
+    NgxsModule.forRoot([], {
       developmentMode: !environment.production
-    })
+    }), NgxsLoggerPluginModule.forRoot()
   ],
   providers: [ChatSocket, StockSocket],
   bootstrap: [AppComponent]

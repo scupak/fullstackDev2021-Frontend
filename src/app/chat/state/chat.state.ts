@@ -1,44 +1,54 @@
 import { Injectable } from '@angular/core';
-import {Action, Selector, State, StateContext} from '@ngxs/store';
-import {WelcomeDto} from '../shared/WelcomeDto';
+import { Action, Selector, State, StateContext } from '@ngxs/store';
+import { ListenForClients, StopListeningForClients, UpdateClients } from './chat.actions';
+import {Subscription} from 'rxjs';
 import {ChatClient} from '../shared/chat-client.model';
-import {GetClients} from './chat.actions';
+import {ChatService} from '../shared/chat.service';
 
-export interface ChatStateModel{
+export interface ChatStateModel {
   chatClients: ChatClient[];
-  chatClient: ChatClient;
 }
-@State<any>({
+
+@State<ChatStateModel>({
   name: 'chat',
   defaults: {
-    chatClients: [],
-    chatClient: {id: '2', nickname: 'd'}
-
+    chatClients: []
   }
 })
 @Injectable()
 export class ChatState {
-  @Selector()
-  static clients(state: ChatStateModel ): ChatClient[]{
-  return state.chatClients;
+  initSub: Subscription | undefined;
+
+  constructor(private chatService: ChatService) {
   }
 
-  @Action(GetClients)
+  @Selector()
+  static clients(state: ChatStateModel): ChatClient[] {
+    return state.chatClients;
+  }
+
+  @Action(ListenForClients)
   getClients(ctx: StateContext<ChatStateModel>): void {
-    // old state Object...
-    // {
-    // chatClient: {id: '2', nickname: 'd'}
-    // }
+    this.initSub = this.chatService.listenForClients()
+      .subscribe(clients => {
+        ctx.dispatch(new UpdateClients(clients));
+      });
+  }
 
+  @Action(StopListeningForClients)
+  stopListeningForClients(ctx: StateContext<ChatStateModel>): void {
+    if (this.initSub) {
+      this.initSub.unsubscribe();
+    }
+  }
+
+  @Action(UpdateClients)
+  updateClients(ctx: StateContext<ChatStateModel>, action: UpdateClients): void {
     const state = ctx.getState();
-
-    const newState: ChatStateModel =
-      {
-        ...state,
-        chatClients: [{id: '22', nickname: 'dd'}]
-      };
-
+    const newState: ChatStateModel = {
+      ...state,
+      chatClients: action.clients
+    };
     ctx.setState(newState);
-
   }
 }

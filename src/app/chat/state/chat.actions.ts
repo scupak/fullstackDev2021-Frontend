@@ -1,5 +1,17 @@
-export class GetClients{
-  static readonly type = '[Chat] Get Clients';
+import {ChatClient} from '../shared/chat-client.model';
 
+
+export class ListenForClients {
+  static readonly type = '[chat] Listen for clients';
+}
+
+export class StopListeningForClients {
+  static readonly type = '[chat] Stop listening for clients';
+}
+
+export class UpdateClients {
+  constructor(public clients: ChatClient[]) {}
+
+  static readonly type = '[chat] Update clients';
 
 }
