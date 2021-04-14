@@ -7,8 +7,8 @@ import {Socket, SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxsModule } from '@ngxs/store';
 import {environment} from '../environments/environment';
-import {ChatState} from "./chat/state/chat.state";
-import {NgxsLoggerPluginModule} from "@ngxs/logger-plugin";
+import {NgxsLoggerPluginModule} from '@ngxs/logger-plugin';
+import {NgxsStoragePluginModule} from '@ngxs/storage-plugin';
 
 
 
@@ -40,7 +40,9 @@ export class StockSocket extends Socket {
     NgbModule,
     NgxsModule.forRoot([], {
       developmentMode: !environment.production
-    }), NgxsLoggerPluginModule.forRoot()
+    }), NgxsLoggerPluginModule.forRoot(),
+    NgxsStoragePluginModule.forRoot()
+
   ],
   providers: [ChatSocket, StockSocket],
   bootstrap: [AppComponent]

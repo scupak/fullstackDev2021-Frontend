@@ -22,6 +22,12 @@ export class StockService {
     return stock;
 
   }
+  listenForSelect(): Observable<StockDTO>{
+    const stock = this.stockSocket.fromEvent<StockDTO>('stockSelect');
+    console.log(stock);
+    return stock;
+
+  }
 
   ListenForAllStocks(): Observable<StockDTO[]>{
 

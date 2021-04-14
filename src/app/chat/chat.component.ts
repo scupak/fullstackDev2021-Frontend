@@ -8,7 +8,7 @@ import {ChatMessage} from './shared/chat-message.model';
 import {DatePipe} from '@angular/common';
 import {ChatState} from './state/chat.state';
 import {Select, Store} from '@ngxs/store';
-import {ListenForClients, StopListeningForClients} from "./state/chat.actions";
+import {ListenForClients, StopListeningForClients} from './state/chat.actions';
 
 @Component({
   selector: 'app-chat',
